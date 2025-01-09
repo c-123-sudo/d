@@ -48,9 +48,9 @@ INSERT INTO PROJECT (Project_No, Project_Title, Project_Area, Guide_No) VALUES
     (103, 'Big Data Management', 'DataBase', 3),
     (104, 'ML for Image Recognition', 'Machine Learning', 4);
 
-    --------------------------------------------------------------------------------------
+     /* --------------------------------------------------------------------------------------
 
-Find the list of project no,project name and name of guide in domain of database.
+Find the list of project no,project name and name of guide in domain of database. */
 
   SELECT 
     P.Project_No, 
