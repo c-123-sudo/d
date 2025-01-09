@@ -1,0 +1,52 @@
+DROP DATABASE IF EXISTS Airline;
+CREATE DATABASE Airline;
+USE Airline;
+
+CREATE TABLE AIRCRAFT (
+    AircraftID INT PRIMARY KEY,
+    Aircraft_name VARCHAR(50),
+    Cruising_range INT
+);
+
+INSERT INTO AIRCRAFT (AircraftID, Aircraft_name, Cruising_range)
+VALUES 
+    (101, 'Boeing 737', 3000), 
+    (102, 'Airbus A320', 3500), 
+    (103, 'Concorde', 4500);
+
+CREATE TABLE EMPLOYEE (
+    EmpID INT PRIMARY KEY,
+    Ename VARCHAR(50),
+    Salary DECIMAL(10, 2)
+);
+
+INSERT INTO EMPLOYEE (EmpID, Ename, Salary)
+VALUES 
+    (1, 'Alice', 75000),
+    (2, 'Bob', 80000),
+    (3, 'Charlie', 70000),
+    (4, 'David', 60000);
+
+CREATE TABLE CERTIFIED (
+    EmpID INT,
+    AircraftID INT,
+    PRIMARY KEY (EmpID, AircraftID),
+    FOREIGN KEY (EmpID) REFERENCES EMPLOYEE(EmpID),
+    FOREIGN KEY (AircraftID) REFERENCES AIRCRAFT(AircraftID)
+);
+
+INSERT INTO CERTIFIED (EmpID, AircraftID)
+VALUES 
+    (1, 101), 
+    (2, 102), 
+    (3, 103);
+----------------------------------------------------------------------------
+
+SELECT EmpID
+FROM EMPLOYEE
+WHERE Salary = (SELECT MAX(Salary) FROM EMPLOYEE);
+
+SELECT EmpID, Ename
+FROM EMPLOYEE
+WHERE EmpID NOT IN (SELECT EmpID FROM CERTIFIED);
+
