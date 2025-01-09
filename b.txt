@@ -1,4 +1,4 @@
-Consider the following tables:
+/* Consider the following tables:
 BRANCH (branch-name:string, branch- city:string, assets:real)
 ACCOUNT (accno:int, branch-name:string, balance:real)
 DEPOSITOR (customer-name:string, accno:int)
@@ -13,7 +13,7 @@ iv) Find the average account balance at each branch.
 
 
 ------------------------------------------------------------------
-
+*/
 CREATE DATABASE BankingSystem;
 USE BankingSystem;
 
