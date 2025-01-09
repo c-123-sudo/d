@@ -1,0 +1,58 @@
+CREATE DATABASE CarOwnership;
+USE CarOwnership;
+
+CREATE TABLE PERSON (
+    DriverID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Address VARCHAR(100)
+);
+
+INSERT INTO PERSON (DriverID, Name, Address) 
+VALUES 
+    (1, 'Alice', '123 Elm St'), 
+    (2, 'Bob', '456 Oak St'), 
+    (3, 'Charlie', '789 Pine St');
+
+CREATE TABLE CAR (
+    Regno VARCHAR(20) PRIMARY KEY,
+    Model VARCHAR(50),
+    Year INT
+);
+
+INSERT INTO CAR (Regno, Model, Year) 
+VALUES 
+    ('CAR001', 'Toyota Corolla', 2015), 
+    ('CAR002', 'Honda Civic', 2018), 
+    ('CAR003', 'Ford Focus', 2020), 
+    ('CAR004', 'Chevrolet Malibu', 2017), 
+    ('CAR005', 'Tesla Model 3', 2021);
+
+CREATE TABLE OWNS (
+    DriverID INT,
+    Regno VARCHAR(20),
+    PRIMARY KEY (DriverID, Regno),
+    FOREIGN KEY (DriverID) REFERENCES PERSON(DriverID),
+    FOREIGN KEY (Regno) REFERENCES CAR(Regno)
+);
+
+INSERT INTO OWNS (DriverID, Regno) 
+VALUES 
+    (1, 'CAR001'), 
+    (1, 'CAR002'), 
+    (2, 'CAR003'), 
+    (2, 'CAR004'), 
+    (3, 'CAR005');
+
+-----------------------------------------------------------------------------------------------
+SELECT 
+    P.DriverID, 
+    P.Name, 
+    COUNT(O.Regno) AS Number_of_Cars 
+FROM 
+    PERSON P 
+LEFT JOIN 
+    OWNS O 
+ON 
+    P.DriverID = O.DriverID  
+GROUP BY 
+    P.DriverID, P.Name;
