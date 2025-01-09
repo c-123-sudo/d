@@ -1,3 +1,11 @@
+Consider the following restaurant database with the following attributes – Name, address –(building, street, area, pincode),id, cuisine, nearby landmarks, online delivery- yes/no, famous for(name of the dish) 
+Create 10 documents with data relevant to the following questions.
+ Write and execute MongoDB queries: 
+1. List the name and address of all restaurants in Bangalore with Italian cuisine 
+2. List the name, address and nearby landmarks of all restaurants in Bangalore where north Indian thali(cuisine) is available. 
+3. List the name, address and nearby landmarks of all restaurants in Bangalore where north Indian thali(cuisine) is available 
+4. List the name and address of restaurants and also the dish the restaurant is famous for, in Bangalore.
+-------------------------------------------------------------------------------------------------------------------------------------
 db.restaurants.insertMany([
   {
     "name": "Bella Italia",
