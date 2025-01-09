@@ -1,4 +1,4 @@
-//Consider the schema for College Database:
+/*  //Consider the schema for College Database:
 STUDENT (USN, SName, Address, Phone, Gender)
 SEMSEC (SSID, Sem, Sec)
 CLASS (USN, SSID)
@@ -17,7 +17,7 @@ If FinallA&lt; 12 then CAT 'Weak
 ------------------------------------------------------------------------------------------
 
 
-
+*/
 
 
 
@@ -95,7 +95,7 @@ INSERT INTO IAMARKS (USN, Subcode, SSID, Test1, Test2, Test3, FinalIA) VALUES
     ('1BI15CS103', 'CS102', 2, 19, 18, 16, NULL),
     ('1BI15CS104', 'CS102', 3, 12, 10, 9, NULL);
 
--------------------------------------------------------------------
+/* ------------------------------------------------------------------- */
 
 
 SELECT s.*
