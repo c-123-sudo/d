@@ -1,4 +1,4 @@
-Consider the following restaurant database with the following attributes 
+/*  Consider the following restaurant database with the following attributes 
 Create an employee database with the fields: {eid, ename, dept, design,
 salary, yoj, address{dno,street, locality, city}}
 Create 10 documents with data relevant to the following questions.
@@ -12,6 +12,7 @@ array objects to “Rahul
 7. Add two phone numbers to “Rahul”
 
 --------------------------------------------------------------------------------------
+*/
 db.employees.insertMany([
     {
         eid: "e1",
