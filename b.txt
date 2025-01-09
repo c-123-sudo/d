@@ -1,3 +1,19 @@
+Consider the following tables:
+BRANCH (branch-name:string, branch- city:string, assets:real)
+ACCOUNT (accno:int, branch-name:string, balance:real)
+DEPOSITOR (customer-name:string, accno:int)
+CUSTOMER (customer-name:string, customer- street:string,customer-city:string)
+LOAN (loannumber:int, branch-name:string, amount:real)
+BORROWER (customer-name:string, loan- number:int)
+Write the SQL Queries for the following:
+i) List in alphabetical order all customers who have a loan at 'Perryridge' branch.
+ii) Find the names of all customers who street address includes the substring "Main".
+iii) List the loan numbers in descending order of amount.
+iv) Find the average account balance at each branch.
+
+
+------------------------------------------------------------------
+
 CREATE DATABASE BankingSystem;
 USE BankingSystem;
 
