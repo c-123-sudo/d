@@ -1,4 +1,4 @@
-Consider the schema for Company Database:
+/*  Consider the schema for Company Database:
 EMPLOYEE (SSN, Name, Address, Sex, Salary, SuperSSN, DNo)
 DEPARTMENT (DNo, DName, MgrSSN, MgrStartDate) DLOCATION
 (DNo,DLoc)
@@ -16,7 +16,7 @@ Show the resulting salaries if every employee working on the 'IoT' project is gi
 For each department that has more than five employees, retrieve the department number and the number of its employees who are making more than Rs. 6,00,000.
 
 
---------------------------------------------------------------------
+--------------------------------------------------------------------  */
 CREATE DATABASE Employee_DB;
 USE Employee_DB;
 
@@ -83,7 +83,8 @@ INSERT INTO WORKS_ON VALUES
 ('987654321', 102, 15),
 ('111222333', 101, 25),
 ('444555666', 103, 30);
-------------------------------------------------------------------------
+/*  ------------------------------------------------------------------------
+*/
 
 
 SELECT DISTINCT P.PNO
