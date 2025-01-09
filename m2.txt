@@ -1,0 +1,169 @@
+db.restaurants.insertMany([
+  {
+    "name": "Bella Italia",
+    "address": {
+      "building": "123",
+      "street": "MG Road",
+      "area": "Indiranagar",
+      "pincode": "560038"
+    },
+    "id": "R001",
+    "cuisine": "Italian",
+    "nearby_landmarks": ["UB City", "Cubbon Park"],
+    "online_delivery": "yes",
+    "famous_for": "Pasta Carbonara"
+  },
+  {
+    "name": "Tandoori Flame",
+    "address": {
+      "building": "45",
+      "street": "Church Street",
+      "area": "MG Road",
+      "pincode": "560001"
+    },
+    "id": "R002",
+    "cuisine": "North Indian",
+    "nearby_landmarks": ["Bangalore Palace", "Vidhana Soudha"],
+    "online_delivery": "no",
+    "famous_for": "North Indian Thali"
+  },
+  {
+    "name": "Spicy Treats",
+    "address": {
+      "building": "22",
+      "street": "HSR Layout",
+      "area": "Bangalore South",
+      "pincode": "560102"
+    },
+    "id": "R003",
+    "cuisine": "Indian",
+    "nearby_landmarks": ["Agara Lake", "Bangalore IT Park"],
+    "online_delivery": "yes",
+    "famous_for": "Paneer Tikka"
+  },
+  {
+    "name": "Pasta & More",
+    "address": {
+      "building": "80",
+      "street": "Koramangala",
+      "area": "Bangalore South",
+      "pincode": "560034"
+    },
+    "id": "R004",
+    "cuisine": "Italian",
+    "nearby_landmarks": ["Koramangala Park", "Forum Mall"],
+    "online_delivery": "yes",
+    "famous_for": "Lasagna"
+  },
+  {
+    "name": "Desi Delights",
+    "address": {
+      "building": "35",
+      "street": "Jayanagar",
+      "area": "Bangalore South",
+      "pincode": "560041"
+    },
+    "id": "R005",
+    "cuisine": "North Indian",
+    "nearby_landmarks": ["Jayanagar Shopping Complex", "Raghavendra Swamy Temple"],
+    "online_delivery": "yes",
+    "famous_for": "North Indian Thali"
+  },
+  {
+    "name": "The Italian Affair",
+    "address": {
+      "building": "50",
+      "street": "Brigade Road",
+      "area": "MG Road",
+      "pincode": "560001"
+    },
+    "id": "R006",
+    "cuisine": "Italian",
+    "nearby_landmarks": ["Garuda Mall", "Church Street"],
+    "online_delivery": "no",
+    "famous_for": "Margherita Pizza"
+  },
+  {
+    "name": "Chili Pepper",
+    "address": {
+      "building": "15",
+      "street": "Banaswadi",
+      "area": "Bangalore East",
+      "pincode": "560043"
+    },
+    "id": "R007",
+    "cuisine": "Mexican",
+    "nearby_landmarks": ["Banaswadi Station", "Kalyan Nagar"],
+    "online_delivery": "yes",
+    "famous_for": "Tacos"
+  },
+  {
+    "name": "Royal North",
+    "address": {
+      "building": "67",
+      "street": "Bellandur",
+      "area": "Bangalore East",
+      "pincode": "560103"
+    },
+    "id": "R008",
+    "cuisine": "North Indian",
+    "nearby_landmarks": ["Bellandur Lake", "Outer Ring Road"],
+    "online_delivery": "yes",
+    "famous_for": "North Indian Thali"
+  },
+  {
+    "name": "Bistro Italiano",
+    "address": {
+      "building": "30",
+      "street": "Whitefield Road",
+      "area": "Whitefield",
+      "pincode": "560066"
+    },
+    "id": "R009",
+    "cuisine": "Italian",
+    "nearby_landmarks": ["Phoenix Marketcity", "International Tech Park"],
+    "online_delivery": "yes",
+    "famous_for": "Risotto"
+  },
+  {
+    "name": "Foodie Haven",
+    "address": {
+      "building": "10",
+      "street": "Ulsoor",
+      "area": "Bangalore East",
+      "pincode": "560008"
+    },
+    "id": "R010",
+    "cuisine": "Indian",
+    "nearby_landmarks": ["Ulsoor Lake", "M.G. Road"],
+    "online_delivery": "no",
+    "famous_for": "Biryani"
+  }
+])
+QUERIES :
+1.	List the name and address of all restaurants in Bangalore with Italian cuisine 
+
+db.restaurants.find(
+  { "cuisine": "Italian" },
+  { "name": 1, "address": 1, "_id": 0 }
+)
+
+2.	List the name, address and nearby landmarks of all restaurants in Bangalore where north Indian thali(cuisine) is available. 
+
+db.restaurants.find(
+  { "cuisine": "North Indian", "famous_for": "North Indian Thali" },
+  { "name": 1, "address": 1, "nearby_landmarks": 1, "_id": 0 }
+)
+3.	List the name, address and nearby landmarks of all restaurants in Bangalore where north Indian thali(cuisine) is available 
+
+db.restaurants.find(
+  { "cuisine": "North Indian", "famous_for": "North Indian Thali" },
+  { "name": 1, "address": 1, "nearby_landmarks": 1, "_id": 0 }
+)
+
+4.	List the name and address of restaurants and also the dish the restaurant is famous for, in Bangalore East. 
+
+db.restaurants.find(
+  { "address.area": "Bangalore East" },
+  { "name": 1, "address": 1, "famous_for": 1, "_id": 0 }
+)
