@@ -1,4 +1,4 @@
-4) Consider the following relations containing the airline flight information:
+/*4) Consider the following relations containing the airline flight information:
 Flights(fino:integer, from:string, to:string, distance: integer,
 departs:time, arrives:time)
 Aircraft (aid:integer, aname:string, cruising range: integer)
@@ -10,7 +10,7 @@ ii) Find the eids of employees who make the highest salary.
 iii) Find the eids of employees who are certified for the largest number of aircraft.
 iv) Find the total amount paid to employees a salaries.
 ------------------------------------------------------------------------
-
+*/
 
 DROP DATABASE IF EXISTS Airline;
 CREATE DATABASE Airline;
@@ -54,7 +54,7 @@ VALUES
     (1, 101), 
     (2, 102), 
     (3, 103);
-----------------------------------------------------------------------------
+/* ---------------------------------------------------------------------------- */
 
 ii) Find the eids of employees who make the highest salary.
 
