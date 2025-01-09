@@ -1,0 +1,53 @@
+DROP DATABASE IF EXISTS MovieDB;
+CREATE DATABASE MovieDB;
+USE MovieDB;
+
+CREATE TABLE Movies (
+    Title VARCHAR(50) PRIMARY KEY,
+    YoP INT NOT NULL,
+    Length INT
+);
+
+INSERT INTO Movies (Title, YoP, Length) VALUES
+    ('Movie A', 2005, 120),
+    ('Movie B', 2010, 130),
+    ('Movie C', 2000, 140),
+    ('Movie D', 2015, 150);
+
+CREATE TABLE Stars (
+    Name VARCHAR(50) PRIMARY KEY,
+    ID INT
+);
+
+INSERT INTO Stars (Name, ID) VALUES
+    ('Kishore', 1),
+    ('John', 2),
+    ('Mary', 3),
+    ('Jane', 4);
+
+CREATE TABLE Act (
+    MovieTitle VARCHAR(100),
+    StarName VARCHAR(100),
+    FOREIGN KEY (MovieTitle) REFERENCES Movies(Title),
+    FOREIGN KEY (StarName) REFERENCES Stars(Name)
+);
+
+INSERT INTO Act (MovieTitle, StarName) VALUES
+    ('Movie A', 'Kishore'),
+    ('Movie B', 'John'),
+    ('Movie C', 'Kishore'),
+    ('Movie D', 'Mary');
+
+
+-------------------------------------------------
+
+-- Query 1: Print all movies released in chronological order
+SELECT * FROM Movies
+ORDER BY YoP ASC;
+
+-- Query 2: Print all movies acted by 'Kishore'
+SELECT M.Title, M.YoP, M.Length
+FROM Movies M
+JOIN Act A ON M.Title = A.MovieTitle
+WHERE A.StarName = 'Kishore';
+
