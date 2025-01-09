@@ -1,0 +1,63 @@
+-- Create the database
+CREATE DATABASE ProjectDB;
+USE ProjectDB;
+
+-- Create the GUIDE table
+CREATE TABLE GUIDE (
+    Guide_No INT PRIMARY KEY,
+    Guide_Name VARCHAR(100),
+    Guide_Research_Domain VARCHAR(100)
+);
+
+-- Insert data into GUIDE table
+INSERT INTO GUIDE (Guide_No, Guide_Name, Guide_Research_Domain) VALUES
+    (1, 'Dr. Smith', 'DataBase'),
+    (2, 'Dr. Alice', 'Artificial Intelligence'),
+    (3, 'Dr. John', 'DataBase'),
+    (4, 'Dr. Emma', 'Machine Learning');
+
+-- Create the STUDENT table
+CREATE TABLE STUDENT (
+    RollNo INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Sem INT,
+    Guide_No INT,
+    FOREIGN KEY (Guide_No) REFERENCES GUIDE(Guide_No)
+);
+
+-- Insert data into STUDENT table
+INSERT INTO STUDENT (RollNo, Name, Sem, Guide_No) VALUES
+    (1, 'Alice', 6, 1),
+    (2, 'Bob', 6, 3),
+    (3, 'Charlie', 8, 2),
+    (4, 'David', 7, 4);
+
+-- Create the PROJECT table
+CREATE TABLE PROJECT (
+    Project_No INT PRIMARY KEY,
+    Project_Title VARCHAR(100),
+    Project_Area VARCHAR(100),
+    Guide_No INT,
+    FOREIGN KEY (Guide_No) REFERENCES GUIDE(Guide_No)
+);
+
+-- Insert data into PROJECT table
+INSERT INTO PROJECT (Project_No, Project_Title, Project_Area, Guide_No) VALUES
+    (101, 'DB Optimization', 'DataBase', 1),
+    (102, 'AI in Medicine', 'Artificial Intelligence', 2),
+    (103, 'Big Data Management', 'DataBase', 3),
+    (104, 'ML for Image Recognition', 'Machine Learning', 4);
+
+    --------------------------------------------------------------------------------------
+
+  SELECT 
+    P.Project_No, 
+    P.Project_Title, 
+    G.Guide_Name
+FROM 
+    PROJECT P
+JOIN 
+    GUIDE G ON P.Guide_No = G.Guide_No
+WHERE 
+    G.Guide_Research_Domain = 'DataBase';
+  
