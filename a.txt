@@ -1,3 +1,17 @@
+4) Consider the following relations containing the airline flight information:
+Flights(fino:integer, from:string, to:string, distance: integer,
+departs:time, arrives:time)
+Aircraft (aid:integer, aname:string, cruising range: integer)
+Certified (eid:integer, aid:integer)
+Employees (eid: integer, ename:string, salary: integer)
+Note that the employees relation describes pilots and other kinds of employees as well; every pilot is certified for some aircraft, only pilots are certified to fly. Write the SQL queries for the following questions:
+i) Find the names of pilots who can operate planes with a range greater than 3000 miles but are not certified on any Jet aircraft.
+ii) Find the eids of employees who make the highest salary.
+iii) Find the eids of employees who are certified for the largest number of aircraft.
+iv) Find the total amount paid to employees a salaries.
+------------------------------------------------------------------------
+
+
 DROP DATABASE IF EXISTS Airline;
 CREATE DATABASE Airline;
 USE Airline;
@@ -42,11 +56,49 @@ VALUES
     (3, 103);
 ----------------------------------------------------------------------------
 
+ii) Find the eids of employees who make the highest salary.
+
 SELECT EmpID
 FROM EMPLOYEE
 WHERE Salary = (SELECT MAX(Salary) FROM EMPLOYEE);
 
+..Find the names and IDs of employees who are not certified for any aircraft
 SELECT EmpID, Ename
 FROM EMPLOYEE
 WHERE EmpID NOT IN (SELECT EmpID FROM CERTIFIED);
+
+
+
+i) Find the names of pilots who can operate planes with a range greater than 3000 miles but are not certified on any Jet aircraft.
+
+SELECT E.Ename
+FROM EMPLOYEE E
+JOIN CERTIFIED C ON E.EmpID = C.EmpID
+JOIN AIRCRAFT A ON C.AircraftID = A.AircraftID
+WHERE A.Cruising_range > 3000
+AND E.EmpID NOT IN (
+    SELECT DISTINCT C.EmpID
+    FROM CERTIFIED C
+    JOIN AIRCRAFT A ON C.AircraftID = A.AircraftID
+    WHERE A.Aircraft_name LIKE '%Jet%'
+);
+
+iii) Find the eids of employees who are certified for the largest number of aircraft.
+
+SELECT C.EmpID
+FROM CERTIFIED C
+GROUP BY C.EmpID
+HAVING COUNT(C.AircraftID) = (
+    SELECT MAX(CertCount)
+    FROM (
+        SELECT COUNT(AircraftID) AS CertCount
+        FROM CERTIFIED
+        GROUP BY EmpID
+    ) SubQuery
+);
+iv) Find the total amount paid to employees a salaries.
+
+SELECT SUM(Salary) AS TotalSalary
+FROM EMPLOYEE;
+
 
