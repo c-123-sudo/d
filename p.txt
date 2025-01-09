@@ -50,6 +50,8 @@ INSERT INTO PROJECT (Project_No, Project_Title, Project_Area, Guide_No) VALUES
 
     --------------------------------------------------------------------------------------
 
+Find the list of project no,project name and name of guide in domain of database.
+
   SELECT 
     P.Project_No, 
     P.Project_Title, 
