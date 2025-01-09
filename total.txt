@@ -1,0 +1,1306 @@
+/*4) Consider the following relations containing the airline flight information:
+Flights(fino:integer, from:string, to:string, distance: integer,
+departs:time, arrives:time)
+Aircraft (aid:integer, aname:string, cruising range: integer)
+Certified (eid:integer, aid:integer)
+Employees (eid: integer, ename:string, salary: integer)
+Note that the employees relation describes pilots and other kinds of employees as well; every pilot is certified for some aircraft, only pilots are certified to fly. Write the SQL queries for the following questions:
+i) Find the names of pilots who can operate planes with a range greater than 3000 miles but are not certified on any Jet aircraft.
+ii) Find the eids of employees who make the highest salary.
+iii) Find the eids of employees who are certified for the largest number of aircraft.
+iv) Find the total amount paid to employees a salaries.
+------------------------------------------------------------------------
+*/
+
+DROP DATABASE IF EXISTS Airline;
+CREATE DATABASE Airline;
+USE Airline;
+
+CREATE TABLE AIRCRAFT (
+    AircraftID INT PRIMARY KEY,
+    Aircraft_name VARCHAR(50),
+    Cruising_range INT
+);
+
+INSERT INTO AIRCRAFT (AircraftID, Aircraft_name, Cruising_range)
+VALUES 
+    (101, 'Boeing 737', 3000), 
+    (102, 'Airbus A320', 3500), 
+    (103, 'Concorde', 4500);
+
+CREATE TABLE EMPLOYEE (
+    EmpID INT PRIMARY KEY,
+    Ename VARCHAR(50),
+    Salary DECIMAL(10, 2)
+);
+
+INSERT INTO EMPLOYEE (EmpID, Ename, Salary)
+VALUES 
+    (1, 'Alice', 75000),
+    (2, 'Bob', 80000),
+    (3, 'Charlie', 70000),
+    (4, 'David', 60000);
+
+CREATE TABLE CERTIFIED (
+    EmpID INT,
+    AircraftID INT,
+    PRIMARY KEY (EmpID, AircraftID),
+    FOREIGN KEY (EmpID) REFERENCES EMPLOYEE(EmpID),
+    FOREIGN KEY (AircraftID) REFERENCES AIRCRAFT(AircraftID)
+);
+
+INSERT INTO CERTIFIED (EmpID, AircraftID)
+VALUES 
+    (1, 101), 
+    (2, 102), 
+    (3, 103);
+/* ---------------------------------------------------------------------------- 
+
+ii) Find the eids of employees who make the highest salary.  */
+
+SELECT EmpID
+FROM EMPLOYEE
+WHERE Salary = (SELECT MAX(Salary) FROM EMPLOYEE);
+/*
+..Find the names and IDs of employees who are not certified for any aircraft
+*/
+SELECT EmpID, Ename
+FROM EMPLOYEE
+WHERE EmpID NOT IN (SELECT EmpID FROM CERTIFIED);
+
+
+/* 
+i) Find the names of pilots who can operate planes with a range greater than 3000 miles but are not certified on any Jet aircraft. */
+
+SELECT E.Ename
+FROM EMPLOYEE E
+JOIN CERTIFIED C ON E.EmpID = C.EmpID
+JOIN AIRCRAFT A ON C.AircraftID = A.AircraftID
+WHERE A.Cruising_range > 3000
+AND E.EmpID NOT IN (
+    SELECT DISTINCT C.EmpID
+    FROM CERTIFIED C
+    JOIN AIRCRAFT A ON C.AircraftID = A.AircraftID
+    WHERE A.Aircraft_name LIKE '%Jet%'
+);
+/*
+iii) Find the eids of employees who are certified for the largest number of aircraft.
+*/
+
+SELECT C.EmpID
+FROM CERTIFIED C
+GROUP BY C.EmpID
+HAVING COUNT(C.AircraftID) = (
+    SELECT MAX(CertCount)
+    FROM (
+        SELECT COUNT(AircraftID) AS CertCount
+        FROM CERTIFIED
+        GROUP BY EmpID
+    ) SubQuery
+);
+/*
+iv) Find the total amount paid to employees a salaries.
+*/
+
+SELECT SUM(Salary) AS TotalSalary
+FROM EMPLOYEE;
+
+
+
+/* Consider the following tables:
+BRANCH (branch-name:string, branch- city:string, assets:real)
+ACCOUNT (accno:int, branch-name:string, balance:real)
+DEPOSITOR (customer-name:string, accno:int)
+CUSTOMER (customer-name:string, customer- street:string,customer-city:string)
+LOAN (loannumber:int, branch-name:string, amount:real)
+BORROWER (customer-name:string, loan- number:int)
+Write the SQL Queries for the following:
+i) List in alphabetical order all customers who have a loan at 'Perryridge' branch.
+ii) Find the names of all customers who street address includes the substring "Main".
+iii) List the loan numbers in descending order of amount.
+iv) Find the average account balance at each branch.
+
+
+------------------------------------------------------------------
+*/
+CREATE DATABASE BankingSystem;
+USE BankingSystem;
+
+CREATE TABLE BRANCH (
+    branch_name VARCHAR(50),
+    branch_city VARCHAR(50),
+    assets REAL,
+    PRIMARY KEY (branch_name)
+);
+
+INSERT INTO BRANCH VALUES
+('Perryridge', 'Harrison', 1000000.00),
+('Downtown', 'Brooklyn', 500000.00),
+('Mianus', 'Stamford', 750000.00);
+
+CREATE TABLE ACCOUNT (
+    accno INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    balance REAL,
+    FOREIGN KEY (branch_name) REFERENCES BRANCH(branch_name)
+);
+
+INSERT INTO ACCOUNT VALUES
+(101, 'Perryridge', 5000.00),
+(102, 'Downtown', 2000.00),
+(103, 'Perryridge', 7000.00),
+(104, 'Mianus', 3000.00);
+
+CREATE TABLE CUSTOMER (
+    customer_name VARCHAR(50) PRIMARY KEY,
+    customer_street VARCHAR(100),
+    customer_city VARCHAR(50)
+);
+
+INSERT INTO CUSTOMER VALUES
+('John Smith', '123 Main St', 'Harrison'),
+('Alice Brown', '456 Elm St', 'Brooklyn'),
+('Robert Johnson', '789 Main Blvd', 'Stamford'),
+('David Miller', '321 Oak St', 'Harrison');
+
+CREATE TABLE DEPOSITOR (
+    customer_name VARCHAR(50),
+    accno INT,
+    PRIMARY KEY (customer_name, accno),
+    FOREIGN KEY (accno) REFERENCES ACCOUNT(accno)
+);
+
+INSERT INTO DEPOSITOR VALUES
+('John Smith', 101),
+('Alice Brown', 102),
+('Robert Johnson', 103),
+('David Miller', 104);
+
+CREATE TABLE LOAN (
+    loannumber INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    amount REAL,
+    FOREIGN KEY (branch_name) REFERENCES BRANCH(branch_name)
+);
+
+INSERT INTO LOAN VALUES
+(201, 'Perryridge', 15000.00),
+(202, 'Downtown', 10000.00),
+(203, 'Mianus', 20000.00),
+(204, 'Perryridge', 30000.00);
+
+CREATE TABLE BORROWER (
+    customer_name VARCHAR(50),
+    loan_number INT,
+    PRIMARY KEY (customer_name, loan_number),
+    FOREIGN KEY (loan_number) REFERENCES LOAN(loannumber)
+);
+
+INSERT INTO BORROWER VALUES
+('John Smith', 201),
+('Alice Brown', 202),
+('Robert Johnson', 203),
+('David Miller', 204);
+
+-- Queries
+
+-- i) List in alphabetical order all customers who have a loan at 'Perryridge' branch.
+SELECT DISTINCT C.customer_name
+FROM CUSTOMER C
+JOIN BORROWER B ON C.customer_name = B.customer_name
+JOIN LOAN L ON B.loan_number = L.loannumber
+WHERE L.branch_name = 'Perryridge'
+ORDER BY C.customer_name;
+
+-- ii) Find the names of all customers whose street address includes the substring “Main”.
+SELECT customer_name
+FROM CUSTOMER
+WHERE customer_street LIKE '%Main%';
+
+-- iii) List the loan numbers in descending order of amount.
+SELECT loannumber
+FROM LOAN
+ORDER BY amount DESC;
+
+-- iv) Find the average account balance at each branch.
+SELECT branch_name, AVG(balance) AS avg_balance
+FROM ACCOUNT
+GROUP BY branch_name;
+
+/*  //Consider the schema for College Database:
+STUDENT (USN, SName, Address, Phone, Gender)
+SEMSEC (SSID, Sem, Sec)
+CLASS (USN, SSID)
+SUBJECT (Subcode, Title, Sem, Credits)
+IAMARKS (USN, Subcode, SSID, Test1, Test2, Test3, FinalIA)
+Write SQL queries to
+1. List all the student details studying in the fourth semester "C" section.
+2. Compute the total number of male and female students in each semester and in each section.
+3. Create a view of Test1 marks of student USN '1B115CS101' in all subjects.
+4. Calculate the FinalIA (average of best two test marks) and update the corresponding table for all students.
+Categorize students based on the following criterion:
+If FinallA 17 to 20 then CAT = 'Outstanding"
+If FinalIA 12 to 16 then CAT - 'Average"
+If FinallA&lt; 12 then CAT 'Weak
+5. Give these details only for 8th semester A, B, and C section students.
+------------------------------------------------------------------------------------------
+
+
+*/
+
+
+
+CREATE DATABASE CollegeDB; 
+USE CollegeDB;
+CREATE TABLE STUDENT (
+    USN VARCHAR(15) PRIMARY KEY,
+    SName VARCHAR(50),
+    Address VARCHAR(100),
+    Phone VARCHAR(15),
+    Gender VARCHAR(10)
+);
+
+INSERT INTO STUDENT (USN, SName, Address, Phone, Gender) VALUES
+    ('1BI15CS101', 'John Doe', '123 Street, City', '9876543210', 'Male'),
+    ('1BI15CS102', 'Jane Smith', '456 Avenue, City', '9876543211', 'Female'),
+    ('1BI15CS103', 'Jim Brown', '789 Road, City', '9876543212', 'Male'),
+    ('1BI15CS104', 'Jessica White', '101 Blvd, City', '9876543213', 'Female');
+
+CREATE TABLE SEMSEC (
+    SSID INT PRIMARY KEY,
+    Sem INT,
+    Sec CHAR(1)
+);
+
+INSERT INTO SEMSEC (SSID, Sem, Sec) VALUES
+    (1, 4, 'C'),
+    (2, 8, 'A'),
+    (3, 8, 'B'),
+    (4, 8, 'C');
+
+CREATE TABLE CLASS (
+    USN VARCHAR(15),
+    SSID INT,
+    FOREIGN KEY (USN) REFERENCES STUDENT(USN),
+    FOREIGN KEY (SSID) REFERENCES SEMSEC(SSID),
+    PRIMARY KEY (USN, SSID)
+);
+
+INSERT INTO CLASS (USN, SSID) VALUES
+    ('1BI15CS101', 1),
+    ('1BI15CS102', 1),
+    ('1BI15CS103', 2),
+    ('1BI15CS104', 3);
+
+CREATE TABLE SUBJECT (
+    Subcode VARCHAR(10) PRIMARY KEY,
+    Title VARCHAR(50),
+    Sem INT,
+    Credits INT
+);
+
+INSERT INTO SUBJECT (Subcode, Title, Sem, Credits) VALUES
+    ('CS101', 'Computer Science Basics', 4, 4),
+    ('CS102', 'Data Structures', 8, 3),
+    ('CS103', 'Algorithms', 8, 3);
+
+CREATE TABLE IAMARKS (
+    USN VARCHAR(15),
+    Subcode VARCHAR(10),
+    SSID INT,
+    Test1 INT,
+    Test2 INT,
+    Test3 INT,
+    FinalIA INT,
+    FOREIGN KEY (USN) REFERENCES STUDENT(USN),
+    FOREIGN KEY (Subcode) REFERENCES SUBJECT(Subcode),
+    FOREIGN KEY (SSID) REFERENCES SEMSEC(SSID),
+    PRIMARY KEY (USN, Subcode, SSID)
+);
+
+INSERT INTO IAMARKS (USN, Subcode, SSID, Test1, Test2, Test3, FinalIA) VALUES
+    ('1BI15CS101', 'CS101', 1, 18, 16, 14, NULL),
+    ('1BI15CS102', 'CS101', 1, 15, 14, 13, NULL),
+    ('1BI15CS103', 'CS102', 2, 19, 18, 16, NULL),
+    ('1BI15CS104', 'CS102', 3, 12, 10, 9, NULL);
+
+/* ------------------------------------------------------------------- */
+
+
+SELECT s.*
+FROM STUDENT s
+JOIN CLASS c ON s.USN = c.USN
+JOIN SEMSEC ss ON c.SSID = ss.SSID
+WHERE ss.Sem = 4 AND ss.Sec = 'C';
+
+
+
+
+SELECT ss.Sem, ss.Sec, s.Gender, COUNT(*) AS Total
+FROM STUDENT s
+JOIN CLASS c ON s.USN = c.USN
+JOIN SEMSEC ss ON c.SSID = ss.SSID
+GROUP BY ss.Sem, ss.Sec, s.Gender
+ORDER BY ss.Sem, ss.Sec, s.Gender;
+
+
+
+
+
+CREATE VIEW Test1_Marks_1BI15CS101 AS
+SELECT Subcode, Test1
+FROM IAMARKS
+WHERE USN = '1BI15CS101';
+
+
+
+
+
+UPDATE IAMARKS
+SET FinalIA = (
+    SELECT AVG(Mark) 
+    FROM (
+        SELECT Test1 AS Mark FROM IAMARKS WHERE USN = IAMARKS.USN
+        UNION ALL
+        SELECT Test2 FROM IAMARKS WHERE USN = IAMARKS.USN
+        UNION ALL
+        SELECT Test3 FROM IAMARKS WHERE USN = IAMARKS.USN
+    ) AS Marks
+    ORDER BY Mark DESC
+    LIMIT 2
+)
+WHERE EXISTS (
+    SELECT 1 FROM IAMARKS i WHERE i.USN = IAMARKS.USN
+);
+
+
+
+UPDATE IAMARKS
+SET CAT = 
+    CASE
+        WHEN FinalIA >= 17 THEN 'Outstanding'
+        WHEN FinalIA BETWEEN 12 AND 16 THEN 'Average'
+        WHEN FinalIA < 12 THEN 'Weak'
+    END;
+
+
+
+
+
+SELECT s.USN, s.SName, ss.Sem, ss.Sec, iam.FinalIA, iam.CAT
+FROM STUDENT s
+JOIN CLASS c ON s.USN = c.USN
+JOIN SEMSEC ss ON c.SSID = ss.SSID
+JOIN IAMARKS iam ON s.USN = iam.USN
+WHERE ss.Sem = 8 AND ss.Sec IN ('A', 'B', 'C');
+
+/* Car Ownership database:
+PERSON (driver – id #, name, address)
+CAR (Regno, model, year)
+OWNS (driver-id #, Regno)
+I. Display the number of cars owned by each driver.
+--------------------------------------------------------------------------
+*/
+CREATE DATABASE CarOwnership;
+USE CarOwnership;
+
+CREATE TABLE PERSON (
+    DriverID INT PRIMARY KEY,
+    Name VARCHAR(50),
+    Address VARCHAR(100)
+);
+
+INSERT INTO PERSON (DriverID, Name, Address) 
+VALUES 
+    (1, 'Alice', '123 Elm St'), 
+    (2, 'Bob', '456 Oak St'), 
+    (3, 'Charlie', '789 Pine St');
+
+CREATE TABLE CAR (
+    Regno VARCHAR(20) PRIMARY KEY,
+    Model VARCHAR(50),
+    Year INT
+);
+
+INSERT INTO CAR (Regno, Model, Year) 
+VALUES 
+    ('CAR001', 'Toyota Corolla', 2015), 
+    ('CAR002', 'Honda Civic', 2018), 
+    ('CAR003', 'Ford Focus', 2020), 
+    ('CAR004', 'Chevrolet Malibu', 2017), 
+    ('CAR005', 'Tesla Model 3', 2021);
+
+CREATE TABLE OWNS (
+    DriverID INT,
+    Regno VARCHAR(20),
+    PRIMARY KEY (DriverID, Regno),
+    FOREIGN KEY (DriverID) REFERENCES PERSON(DriverID),
+    FOREIGN KEY (Regno) REFERENCES CAR(Regno)
+);
+
+INSERT INTO OWNS (DriverID, Regno) 
+VALUES 
+    (1, 'CAR001'), 
+    (1, 'CAR002'), 
+    (2, 'CAR003'), 
+    (2, 'CAR004'), 
+    (3, 'CAR005');
+
+/* -----------------------------------------------------------------------------------------------  */
+SELECT 
+    P.DriverID, 
+    P.Name, 
+    COUNT(O.Regno) AS Number_of_Cars 
+FROM 
+    PERSON P 
+LEFT JOIN 
+    OWNS O 
+ON 
+    P.DriverID = O.DriverID  
+GROUP BY 
+    P.DriverID, P.Name;
+
+/*  Consider the schema for Company Database:
+EMPLOYEE (SSN, Name, Address, Sex, Salary, SuperSSN, DNo)
+DEPARTMENT (DNo, DName, MgrSSN, MgrStartDate) DLOCATION
+(DNo,DLoc)
+PROJECT (PNo, PName, PLocation, DNo)
+WORKS_ON (SSN, PNo, Hours)
+Write SQL queries to
+1.
+Make a list of all project numbers for projects that involve an employee whose last name is 'Scott', either as a worker or as a manager of the department that controls the project.
+2.
+Show the resulting salaries if every employee working on the 'IoT' project is given a 10 percent raise.
+3
+. Find the sum of the salaries of all employees of the 'Accounts' department, as well as the maximum salary, the minimum salary, and the average salary in this department
+4. Retrieve the name of each employee who works on all the projects controlled by department number (use NOT EXISTS operator).
+5.
+For each department that has more than five employees, retrieve the department number and the number of its employees who are making more than Rs. 6,00,000.
+
+
+--------------------------------------------------------------------  */
+CREATE DATABASE Employee_DB;
+USE Employee_DB;
+
+CREATE TABLE EMPLOYEE (
+    SSN CHAR(9) PRIMARY KEY,
+    Name VARCHAR(50),
+    Address VARCHAR(100),
+    Sex CHAR(1),
+    Salary DECIMAL(10, 2),
+    SuperSSN CHAR(9),
+    DNO INT
+);
+
+INSERT INTO EMPLOYEE VALUES
+('123456789', 'John Scott', '123 Elm St', 'M', 800000, NULL, 1),
+('987654321', 'Alice Brown', '456 Oak St', 'F', 600000, '123456789', 2),
+('111222333', 'Michael Johnson', '789 Pine St', 'M', 700000, '987654321', 1),
+('444555666', 'Sarah Scott', '321 Maple St', 'F', 500000, '123456789', 3);
+
+CREATE TABLE DEPARTMENT (
+    DNO INT PRIMARY KEY,
+    DName VARCHAR(50),
+    MgrSSN CHAR(9),
+    MgrStartDate DATE
+);
+
+INSERT INTO DEPARTMENT VALUES
+(1, 'Accounts', '123456789', '2020-01-01'),
+(2, 'Marketing', '987654321', '2021-01-01'),
+(3, 'Research', '444555666', '2022-01-01');
+
+CREATE TABLE DLOCATION (
+    DNO INT,
+    DLoc VARCHAR(50),
+    PRIMARY KEY (DNO, DLoc)
+);
+
+INSERT INTO DLOCATION VALUES
+(1, 'New York'),
+(2, 'Chicago'),
+(3, 'San Francisco');
+
+CREATE TABLE PROJECT (
+    PNO INT PRIMARY KEY,
+    PName VARCHAR(50),
+    PLocation VARCHAR(50),
+    DNO INT
+);
+
+INSERT INTO PROJECT VALUES
+(101, 'IoT', 'New York', 1),
+(102, 'AI', 'Chicago', 2),
+(103, 'Web', 'San Francisco', 3);
+
+CREATE TABLE WORKS_ON (
+    SSN CHAR(9),
+    PNO INT,
+    Hours DECIMAL(5, 2),
+    PRIMARY KEY (SSN, PNO)
+);
+
+INSERT INTO WORKS_ON VALUES
+('123456789', 101, 20),
+('987654321', 102, 15),
+('111222333', 101, 25),
+('444555666', 103, 30);
+/*  ------------------------------------------------------------------------
+*/
+
+
+SELECT DISTINCT P.PNO
+FROM PROJECT P
+JOIN DEPARTMENT D ON P.DNO = D.DNO
+LEFT JOIN EMPLOYEE E1 ON D.MgrSSN = E1.SSN
+LEFT JOIN WORKS_ON W ON W.PNO = P.PNO
+LEFT JOIN EMPLOYEE E2 ON W.SSN = E2.SSN
+WHERE E1.Name LIKE '%Scott%' OR E2.Name LIKE '%Scott%';
+
+
+
+
+SELECT E.Name, E.Salary * 1.10 AS NewSalary
+FROM EMPLOYEE E
+JOIN WORKS_ON W ON E.SSN = W.SSN
+JOIN PROJECT P ON W.PNO = P.PNO
+WHERE P.PName = 'IoT';
+
+
+
+
+
+SELECT 
+    SUM(E.Salary) AS TotalSalaries, 
+    MAX(E.Salary) AS MaxSalary, 
+    MIN(E.Salary) AS MinSalary, 
+    AVG(E.Salary) AS AvgSalary
+FROM EMPLOYEE E
+JOIN DEPARTMENT D ON E.DNO = D.DNO
+WHERE D.DName = 'Accounts';
+
+
+
+
+SELECT E.Name
+FROM EMPLOYEE E
+WHERE NOT EXISTS (
+    SELECT P.PNO
+    FROM PROJECT P
+    WHERE P.DNO = 1
+    AND NOT EXISTS (
+        SELECT W.PNO
+        FROM WORKS_ON W
+        WHERE W.SSN = E.SSN AND W.PNO = P.PNO
+    )
+);
+
+
+
+
+
+SELECT D.DNO, COUNT(E.SSN) AS EmployeeCount
+FROM DEPARTMENT D
+JOIN EMPLOYEE E ON D.DNO = E.DNO
+WHERE E.Salary > 600000
+GROUP BY D.DNO
+HAVING COUNT(E.SSN) > 1;
+
+/* A. Consider the following schema for a Library Database:
+BOOK (Book_id, Title, Publisher_Name, Pub_Year) BOOK_AUTHORS (Book_id, Author_Name) PUBLISHER (Name, Address, Phone)
+BOOK_COPIES (Book_id, Branch_id, No-of_Copies) BOOK_LENDING (Book_id, Branch id, Card No, Date Out, Due_Date)
+LIBRARY_BRANCH (Branch_id, Branch_Name, Address)
+Write SQL queries to
+1.
+Retrieve details of all books in the library id, title, name of publisher, authors, number of copies in each branch, etc
+2.
+Get the particulars of borrowers who have borrowed more than 3 books, but from Jan 2017 to Jun 2017
+3.
+Delete a book in the BOOK table. Update the contents of other tables to reflect this data manipulation operation.
+4.
+Partition the BOOK table based on year of publication. Demonstrate its working with a simple query.
+5.
+Create a view of all books and its number of copies that are currently available in the Library.
+------------------------------------------------------------------------*/
+CREATE DATABASE LibraryDB;
+USE LibraryDB;
+
+CREATE TABLE BOOK (
+    Book_id INT PRIMARY KEY, 
+    Title VARCHAR(100), 
+    Publisher_Name VARCHAR(100), 
+    Pub_Year INT
+);
+
+INSERT INTO BOOK (Book_id, Title, Publisher_Name, Pub_Year) VALUES 
+(1, 'To Kill a Mockingbird', 'HarperCollins', 1960), 
+(2, '1984', 'Secker & Warburg', 1949), 
+(3, 'Pride and Prejudice', 'T. Egerton', 1813), 
+(4, 'The Great Gatsby', 'Charles Scribner''s Sons', 1925), 
+(5, 'Moby Dick', 'Harper & Brothers', 1851), 
+(6, 'The Catcher in the Rye', 'Little, Brown and Company', 1951);
+
+CREATE TABLE BOOK_AUTHORS (
+    Book_id INT, 
+    Author_Name VARCHAR(100), 
+    FOREIGN KEY (Book_id) REFERENCES BOOK(Book_id)
+);
+
+INSERT INTO BOOK_AUTHORS (Book_id, Author_Name) VALUES 
+(1, 'Harper Lee'), 
+(2, 'George Orwell'), 
+(3, 'Jane Austen'), 
+(4, 'F. Scott Fitzgerald'), 
+(5, 'Herman Melville'), 
+(6, 'J.D. Salinger');
+
+CREATE TABLE PUBLISHER (
+    Name VARCHAR(100) PRIMARY KEY, 
+    Address VARCHAR(100), 
+    Phone VARCHAR(15)
+);
+
+INSERT INTO PUBLISHER (Name, Address, Phone) VALUES 
+('HarperCollins', '195 Broadway, New York', '212-207-7000'), 
+('Secker & Warburg', '20 Vauxhall Bridge Road, London', '020-7762-2300'), 
+('T. Egerton', 'Whitcomb Street, London', '020-7872-8500'), 
+('Charles Scribner''s Sons', '597 Fifth Avenue, New York', '212-555-2100'), 
+('Harper & Brothers', '195 Broadway, New York', '212-207-7700'), 
+('Little, Brown and Company', 'Harvard Street, Boston', '617-536-4427');
+
+CREATE TABLE BOOK_COPIES (
+    Book_id INT, 
+    Branch_id INT, 
+    No_of_Copies INT, 
+    FOREIGN KEY (Book_id) REFERENCES BOOK(Book_id)
+);
+
+INSERT INTO BOOK_COPIES (Book_id, Branch_id, No_of_Copies) VALUES 
+(1, 1, 5), (1, 2, 3), (1, 3, 4), 
+(2, 1, 6), (2, 2, 2), (2, 3, 1), 
+(3, 1, 7), (3, 2, 8), (3, 3, 5), 
+(4, 1, 4), (4, 2, 5), (4, 3, 6), 
+(5, 1, 10), (5, 2, 2), (5, 3, 7), 
+(6, 1, 3), (6, 2, 5), (6, 3, 2);
+
+CREATE TABLE LIBRARY_BRANCH (
+    Branch_id INT PRIMARY KEY, 
+    Branch_Name VARCHAR(100), 
+    Address VARCHAR(100)
+);
+
+INSERT INTO LIBRARY_BRANCH (Branch_id, Branch_Name, Address) VALUES 
+(1, 'Central Library', 'Main Street, New York'), 
+(2, 'East Side Branch', 'East Avenue, New York'), 
+(3, 'West Side Branch', 'West Avenue, New York');
+
+CREATE TABLE BOOK_LENDING (
+    Book_id INT, 
+    Branch_id INT, 
+    Card_No INT, 
+    Date_Out DATE, 
+    Due_Date DATE, 
+    FOREIGN KEY (Book_id) REFERENCES BOOK(Book_id), 
+    FOREIGN KEY (Branch_id) REFERENCES LIBRARY_BRANCH(Branch_id)
+);
+
+INSERT INTO BOOK_LENDING (Book_id, Branch_id, Card_No, Date_Out, Due_Date) VALUES 
+(1, 1, 101, '2017-01-10', '2017-01-24'), 
+(2, 2, 101, '2017-02-01', '2017-02-15'), 
+(3, 1, 101, '2017-03-05', '2017-03-19'), 
+(4, 3, 101, '2017-05-10', '2017-05-24'), 
+(5, 2, 102, '2017-01-15', '2017-01-29'), 
+(6, 1, 102, '2017-02-10', '2017-02-24'), 
+(1, 2, 102, '2017-03-01', '2017-03-15'), 
+(3, 3, 102, '2017-04-10', '2017-04-24'), 
+(2, 1, 102, '2017-06-01', '2017-06-15'), 
+(4, 1, 103, '2017-01-20', '2017-02-03'), 
+(5, 2, 103, '2017-03-01', '2017-03-15');
+
+/* --------------------------------------------------------------------------------- */
+SELECT 
+    b.Book_id, 
+    b.Title, 
+    b.Publisher_Name, 
+    b.Pub_Year, 
+    a.Author_Name, 
+    bc.Branch_id, 
+    bc.No_of_Copies
+FROM 
+    BOOK b
+JOIN 
+    BOOK_AUTHORS a ON b.Book_id = a.Book_id
+JOIN 
+    BOOK_COPIES bc ON b.Book_id = bc.Book_id;
+
+
+
+SELECT 
+    bl.Card_No, 
+    COUNT(*) AS Books_Borrowed
+FROM 
+    BOOK_LENDING bl
+WHERE 
+    bl.Date_Out BETWEEN '2017-01-01' AND '2017-06-30'
+GROUP BY 
+    bl.Card_No
+HAVING 
+    COUNT(*) > 3;
+
+
+
+DELETE FROM BOOK_AUTHORS WHERE Book_id = 3;
+DELETE FROM BOOK_COPIES WHERE Book_id = 3;
+DELETE FROM BOOK_LENDING WHERE Book_id = 3;
+DELETE FROM BOOK WHERE Book_id = 3;
+
+
+
+CREATE VIEW Available_Books AS 
+SELECT 
+    b.Book_id, 
+    b.Title, 
+    SUM(bc.No_of_Copies) AS Total_Available_Copies
+FROM 
+    BOOK b
+JOIN 
+    BOOK_COPIES bc ON b.Book_id = bc.Book_id
+GROUP BY 
+    b.Book_id, b.Title;
+
+
+/*  Consider the following restaurant database with the following attributes 
+Create an employee database with the fields: {eid, ename, dept, design,
+salary, yoj, address{dno,street, locality, city}}
+Create 10 documents with data relevant to the following questions.
+1. Display all the employees with salary in range (50000, 75000)
+2. Display all the employees with design developer
+3. Add field age to employee “Rahul”
+4. Remove YOJ from “Rahul”
+5. Remove p3 from “Rahul”
+6. Add a new embedded object “contacts” with “email” and “phone” as
+array objects to “Rahul
+7. Add two phone numbers to “Rahul”
+
+--------------------------------------------------------------------------------------
+*/
+db.employees.insertMany([
+    {
+        eid: "e1",
+        ename: "Rahul",
+        dept: "Development",
+        design: "Developer",
+        salary: 60000,
+        yoj: 2015,
+        address: {
+            dno: "101",
+            street: "MG Road",
+            locality: "Downtown",
+            city: "Mumbai"
+        }
+    },
+    {
+        eid: "e2",
+        ename: "Anjali",
+        dept: "Development",
+        design: "Developer",
+        salary: 75000,
+        yoj: 2018,
+        address: {
+            dno: "102",
+            street: "Baker Street",
+            locality: "West End",
+            city: "London"
+        }
+    },
+    {
+        eid: "e3",
+        ename: "Vikas",
+        dept: "Marketing",
+        design: "Manager",
+        salary: 72000,
+        yoj: 2016,
+        address: {
+            dno: "202",
+            street: "Highway 66",
+            locality: "Suburbs",
+            city: "Chicago"
+        }
+    },
+    {
+        eid: "e4",
+        ename: "Priya",
+        dept: "Sales",
+        design: "Executive",
+        salary: 50000,
+        yoj: 2017,
+        address: {
+            dno: "203",
+            street: "Oak Lane",
+            locality: "Green Valley",
+            city: "Delhi"
+        }
+    },
+    {
+        eid: "e5",
+        ename: "Kiran",
+        dept: "Development",
+        design: "Developer",
+        salary: 60000,
+        yoj: 2019,
+        address: {
+            dno: "204",
+            street: "Main Street",
+            locality: "City Center",
+            city: "Bangalore"
+        }
+    },
+    {
+        eid: "e6",
+        ename: "Sanya",
+        dept: "HR",
+        design: "HR Executive",
+        salary: 55000,
+        yoj: 2014,
+        address: {
+            dno: "205",
+            street: "Seaview Road",
+            locality: "Beach Town",
+            city: "Goa"
+        }
+    },
+    {
+        eid: "e7",
+        ename: "Manoj",
+        dept: "Finance",
+        design: "Analyst",
+        salary: 65000,
+        yoj: 2018,
+        address: {
+            dno: "206",
+            street: "Kingfisher Ave",
+            locality: "Downtown",
+            city: "Chennai"
+        }
+    },
+    {
+        eid: "e8",
+        ename: "Nisha",
+        dept: "Sales",
+        design: "Executive",
+        salary: 52000,
+        yoj: 2020,
+        address: {
+            dno: "207",
+            street: "Lakeside Street",
+            locality: "North End",
+            city: "Pune"
+        }
+    },
+    {
+        eid: "e9",
+        ename: "Rajesh",
+        dept: "Marketing",
+        design: "Manager",
+        salary: 70000,
+        yoj: 2016,
+        address: {
+            dno: "208",
+            street: "Sunset Boulevard",
+            locality: "Downtown",
+            city: "Hyderabad"
+        }
+    },
+    {
+        eid: "e10",
+        ename: "Suresh",
+        dept: "Development",
+        design: "Developer",
+        salary: 75000,
+        yoj: 2017,
+        address: {
+            dno: "209",
+            street: "Park Lane",
+            locality: "City Square",
+            city: "Kolkata"
+        }
+    }
+]);
+
+
+
+
+
+-------------------------------------------------------------------------
+
+QUERIES :
+
+1.	Display all the employees with salary in range (50000, 75000)
+
+db.employees.find({ salary: { $gt: 50000, $lt: 75000 } });
+
+2.	Display all the employees with design developer
+
+db.employees.find({ design: "Developer" });
+
+3.	Add field age to employee “Rahul”
+
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { $set: { age: 30 } }
+);
+
+4.	Remove YOJ from “Rahul”
+
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { $unset: { yoj: "" } }
+);
+
+
+
+5.	Remove p3 from “Rahul”
+
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { $unset: { address: "" } }
+);
+
+6. Add a new embedded object “contacts” with “email” and “phone” as
+array objects to “Rahul
+
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { 
+        $set: { 
+            contacts: {
+                email: ["rahul@example.com"],
+                phone: ["1234567890"]
+            }
+        }
+   }
+);
+
+
+
+
+
+
+
+7. Add two phone numbers to “Rahul”
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { 
+        $push: { 
+            "contacts.phone": { $each: ["9876543210", "1122334455"] }
+        }
+    }
+);
+
+Consider the following restaurant database with the following attributes – Name, address –(building, street, area, pincode),id, cuisine, nearby landmarks, online delivery- yes/no, famous for(name of the dish) 
+Create 10 documents with data relevant to the following questions.
+ Write and execute MongoDB queries: 
+1. List the name and address of all restaurants in Bangalore with Italian cuisine 
+2. List the name, address and nearby landmarks of all restaurants in Bangalore where north Indian thali(cuisine) is available. 
+3. List the name, address and nearby landmarks of all restaurants in Bangalore where north Indian thali(cuisine) is available 
+4. List the name and address of restaurants and also the dish the restaurant is famous for, in Bangalore.
+-------------------------------------------------------------------------------------------------------------------------------------
+db.restaurants.insertMany([
+  {
+    "name": "Bella Italia",
+    "address": {
+      "building": "123",
+      "street": "MG Road",
+      "area": "Indiranagar",
+      "pincode": "560038"
+    },
+    "id": "R001",
+    "cuisine": "Italian",
+    "nearby_landmarks": ["UB City", "Cubbon Park"],
+    "online_delivery": "yes",
+    "famous_for": "Pasta Carbonara"
+  },
+  {
+    "name": "Tandoori Flame",
+    "address": {
+      "building": "45",
+      "street": "Church Street",
+      "area": "MG Road",
+      "pincode": "560001"
+    },
+    "id": "R002",
+    "cuisine": "North Indian",
+    "nearby_landmarks": ["Bangalore Palace", "Vidhana Soudha"],
+    "online_delivery": "no",
+    "famous_for": "North Indian Thali"
+  },
+  {
+    "name": "Spicy Treats",
+    "address": {
+      "building": "22",
+      "street": "HSR Layout",
+      "area": "Bangalore South",
+      "pincode": "560102"
+    },
+    "id": "R003",
+    "cuisine": "Indian",
+    "nearby_landmarks": ["Agara Lake", "Bangalore IT Park"],
+    "online_delivery": "yes",
+    "famous_for": "Paneer Tikka"
+  },
+  {
+    "name": "Pasta & More",
+    "address": {
+      "building": "80",
+      "street": "Koramangala",
+      "area": "Bangalore South",
+      "pincode": "560034"
+    },
+    "id": "R004",
+    "cuisine": "Italian",
+    "nearby_landmarks": ["Koramangala Park", "Forum Mall"],
+    "online_delivery": "yes",
+    "famous_for": "Lasagna"
+  },
+  {
+    "name": "Desi Delights",
+    "address": {
+      "building": "35",
+      "street": "Jayanagar",
+      "area": "Bangalore South",
+      "pincode": "560041"
+    },
+    "id": "R005",
+    "cuisine": "North Indian",
+    "nearby_landmarks": ["Jayanagar Shopping Complex", "Raghavendra Swamy Temple"],
+    "online_delivery": "yes",
+    "famous_for": "North Indian Thali"
+  },
+  {
+    "name": "The Italian Affair",
+    "address": {
+      "building": "50",
+      "street": "Brigade Road",
+      "area": "MG Road",
+      "pincode": "560001"
+    },
+    "id": "R006",
+    "cuisine": "Italian",
+    "nearby_landmarks": ["Garuda Mall", "Church Street"],
+    "online_delivery": "no",
+    "famous_for": "Margherita Pizza"
+  },
+  {
+    "name": "Chili Pepper",
+    "address": {
+      "building": "15",
+      "street": "Banaswadi",
+      "area": "Bangalore East",
+      "pincode": "560043"
+    },
+    "id": "R007",
+    "cuisine": "Mexican",
+    "nearby_landmarks": ["Banaswadi Station", "Kalyan Nagar"],
+    "online_delivery": "yes",
+    "famous_for": "Tacos"
+  },
+  {
+    "name": "Royal North",
+    "address": {
+      "building": "67",
+      "street": "Bellandur",
+      "area": "Bangalore East",
+      "pincode": "560103"
+    },
+    "id": "R008",
+    "cuisine": "North Indian",
+    "nearby_landmarks": ["Bellandur Lake", "Outer Ring Road"],
+    "online_delivery": "yes",
+    "famous_for": "North Indian Thali"
+  },
+  {
+    "name": "Bistro Italiano",
+    "address": {
+      "building": "30",
+      "street": "Whitefield Road",
+      "area": "Whitefield",
+      "pincode": "560066"
+    },
+    "id": "R009",
+    "cuisine": "Italian",
+    "nearby_landmarks": ["Phoenix Marketcity", "International Tech Park"],
+    "online_delivery": "yes",
+    "famous_for": "Risotto"
+  },
+  {
+    "name": "Foodie Haven",
+    "address": {
+      "building": "10",
+      "street": "Ulsoor",
+      "area": "Bangalore East",
+      "pincode": "560008"
+    },
+    "id": "R010",
+    "cuisine": "Indian",
+    "nearby_landmarks": ["Ulsoor Lake", "M.G. Road"],
+    "online_delivery": "no",
+    "famous_for": "Biryani"
+  }
+])
+QUERIES :
+1.	List the name and address of all restaurants in Bangalore with Italian cuisine 
+
+db.restaurants.find(
+  { "cuisine": "Italian" },
+  { "name": 1, "address": 1, "_id": 0 }
+)
+
+2.	List the name, address and nearby landmarks of all restaurants in Bangalore where north Indian thali(cuisine) is available. 
+
+db.restaurants.find(
+  { "cuisine": "North Indian", "famous_for": "North Indian Thali" },
+  { "name": 1, "address": 1, "nearby_landmarks": 1, "_id": 0 }
+)
+3.	List the name, address and nearby landmarks of all restaurants in Bangalore where north Indian thali(cuisine) is available 
+
+db.restaurants.find(
+  { "cuisine": "North Indian", "famous_for": "North Indian Thali" },
+  { "name": 1, "address": 1, "nearby_landmarks": 1, "_id": 0 }
+)
+
+4.	List the name and address of restaurants and also the dish the restaurant is famous for, in Bangalore East. 
+
+db.restaurants.find(
+  { "address.area": "Bangalore East" },
+  { "name": 1, "address": 1, "famous_for": 1, "_id": 0 }
+)
+
+/*  Movie database
+MOVIES(Title, YoP, Length).
+STARS(Name, ID,)
+ACT (MovieTitle, StarName)
+I. Print all movies released in chronological order.
+C
+II. Print all movies acted by 'KISHORE'
+
+-------------------------------------------------------------- */
+DROP DATABASE IF EXISTS MovieDB;
+CREATE DATABASE MovieDB;
+USE MovieDB;
+
+CREATE TABLE Movies (
+    Title VARCHAR(50) PRIMARY KEY,
+    YoP INT NOT NULL,
+    Length INT
+);
+
+INSERT INTO Movies (Title, YoP, Length) VALUES
+    ('Movie A', 2005, 120),
+    ('Movie B', 2010, 130),
+    ('Movie C', 2000, 140),
+    ('Movie D', 2015, 150);
+
+CREATE TABLE Stars (
+    Name VARCHAR(50) PRIMARY KEY,
+    ID INT
+);
+
+INSERT INTO Stars (Name, ID) VALUES
+    ('Kishore', 1),
+    ('John', 2),
+    ('Mary', 3),
+    ('Jane', 4);
+
+CREATE TABLE Act (
+    MovieTitle VARCHAR(100),
+    StarName VARCHAR(100),
+    FOREIGN KEY (MovieTitle) REFERENCES Movies(Title),
+    FOREIGN KEY (StarName) REFERENCES Stars(Name)
+);
+
+INSERT INTO Act (MovieTitle, StarName) VALUES
+    ('Movie A', 'Kishore'),
+    ('Movie B', 'John'),
+    ('Movie C', 'Kishore'),
+    ('Movie D', 'Mary');
+
+
+/* ------------------------------------------------- */
+
+-- Query 1: Print all movies released in chronological order
+SELECT * FROM Movies
+ORDER BY YoP ASC;
+
+-- Query 2: Print all movies acted by 'Kishore'
+SELECT M.Title, M.YoP, M.Length
+FROM Movies M
+JOIN Act A ON M.Title = A.MovieTitle
+WHERE A.StarName = 'Kishore';
+
+
+-- Create the database
+CREATE DATABASE ProjectDB;
+USE ProjectDB;
+
+-- Create the GUIDE table
+CREATE TABLE GUIDE (
+    Guide_No INT PRIMARY KEY,
+    Guide_Name VARCHAR(100),
+    Guide_Research_Domain VARCHAR(100)
+);
+
+-- Insert data into GUIDE table
+INSERT INTO GUIDE (Guide_No, Guide_Name, Guide_Research_Domain) VALUES
+    (1, 'Dr. Smith', 'DataBase'),
+    (2, 'Dr. Alice', 'Artificial Intelligence'),
+    (3, 'Dr. John', 'DataBase'),
+    (4, 'Dr. Emma', 'Machine Learning');
+
+-- Create the STUDENT table
+CREATE TABLE STUDENT (
+    RollNo INT PRIMARY KEY,
+    Name VARCHAR(100),
+    Sem INT,
+    Guide_No INT,
+    FOREIGN KEY (Guide_No) REFERENCES GUIDE(Guide_No)
+);
+
+-- Insert data into STUDENT table
+INSERT INTO STUDENT (RollNo, Name, Sem, Guide_No) VALUES
+    (1, 'Alice', 6, 1),
+    (2, 'Bob', 6, 3),
+    (3, 'Charlie', 8, 2),
+    (4, 'David', 7, 4);
+
+-- Create the PROJECT table
+CREATE TABLE PROJECT (
+    Project_No INT PRIMARY KEY,
+    Project_Title VARCHAR(100),
+    Project_Area VARCHAR(100),
+    Guide_No INT,
+    FOREIGN KEY (Guide_No) REFERENCES GUIDE(Guide_No)
+);
+
+-- Insert data into PROJECT table
+INSERT INTO PROJECT (Project_No, Project_Title, Project_Area, Guide_No) VALUES
+    (101, 'DB Optimization', 'DataBase', 1),
+    (102, 'AI in Medicine', 'Artificial Intelligence', 2),
+    (103, 'Big Data Management', 'DataBase', 3),
+    (104, 'ML for Image Recognition', 'Machine Learning', 4);
+
+     /* --------------------------------------------------------------------------------------
+
+Find the list of project no,project name and name of guide in domain of database. */
+
+  SELECT 
+    P.Project_No, 
+    P.Project_Title, 
+    G.Guide_Name
+FROM 
+    PROJECT P
+JOIN 
+    GUIDE G ON P.Guide_No = G.Guide_No
+WHERE 
+    G.Guide_Research_Domain = 'DataBase';
+  
+
