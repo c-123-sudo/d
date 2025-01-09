@@ -1,0 +1,103 @@
+CREATE DATABASE BankingSystem;
+USE BankingSystem;
+
+CREATE TABLE BRANCH (
+    branch_name VARCHAR(50),
+    branch_city VARCHAR(50),
+    assets REAL,
+    PRIMARY KEY (branch_name)
+);
+
+INSERT INTO BRANCH VALUES
+('Perryridge', 'Harrison', 1000000.00),
+('Downtown', 'Brooklyn', 500000.00),
+('Mianus', 'Stamford', 750000.00);
+
+CREATE TABLE ACCOUNT (
+    accno INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    balance REAL,
+    FOREIGN KEY (branch_name) REFERENCES BRANCH(branch_name)
+);
+
+INSERT INTO ACCOUNT VALUES
+(101, 'Perryridge', 5000.00),
+(102, 'Downtown', 2000.00),
+(103, 'Perryridge', 7000.00),
+(104, 'Mianus', 3000.00);
+
+CREATE TABLE CUSTOMER (
+    customer_name VARCHAR(50) PRIMARY KEY,
+    customer_street VARCHAR(100),
+    customer_city VARCHAR(50)
+);
+
+INSERT INTO CUSTOMER VALUES
+('John Smith', '123 Main St', 'Harrison'),
+('Alice Brown', '456 Elm St', 'Brooklyn'),
+('Robert Johnson', '789 Main Blvd', 'Stamford'),
+('David Miller', '321 Oak St', 'Harrison');
+
+CREATE TABLE DEPOSITOR (
+    customer_name VARCHAR(50),
+    accno INT,
+    PRIMARY KEY (customer_name, accno),
+    FOREIGN KEY (accno) REFERENCES ACCOUNT(accno)
+);
+
+INSERT INTO DEPOSITOR VALUES
+('John Smith', 101),
+('Alice Brown', 102),
+('Robert Johnson', 103),
+('David Miller', 104);
+
+CREATE TABLE LOAN (
+    loannumber INT PRIMARY KEY,
+    branch_name VARCHAR(50),
+    amount REAL,
+    FOREIGN KEY (branch_name) REFERENCES BRANCH(branch_name)
+);
+
+INSERT INTO LOAN VALUES
+(201, 'Perryridge', 15000.00),
+(202, 'Downtown', 10000.00),
+(203, 'Mianus', 20000.00),
+(204, 'Perryridge', 30000.00);
+
+CREATE TABLE BORROWER (
+    customer_name VARCHAR(50),
+    loan_number INT,
+    PRIMARY KEY (customer_name, loan_number),
+    FOREIGN KEY (loan_number) REFERENCES LOAN(loannumber)
+);
+
+INSERT INTO BORROWER VALUES
+('John Smith', 201),
+('Alice Brown', 202),
+('Robert Johnson', 203),
+('David Miller', 204);
+
+-- Queries
+
+-- i) List in alphabetical order all customers who have a loan at 'Perryridge' branch.
+SELECT DISTINCT C.customer_name
+FROM CUSTOMER C
+JOIN BORROWER B ON C.customer_name = B.customer_name
+JOIN LOAN L ON B.loan_number = L.loannumber
+WHERE L.branch_name = 'Perryridge'
+ORDER BY C.customer_name;
+
+-- ii) Find the names of all customers whose street address includes the substring “Main”.
+SELECT customer_name
+FROM CUSTOMER
+WHERE customer_street LIKE '%Main%';
+
+-- iii) List the loan numbers in descending order of amount.
+SELECT loannumber
+FROM LOAN
+ORDER BY amount DESC;
+
+-- iv) Find the average account balance at each branch.
+SELECT branch_name, AVG(balance) AS avg_balance
+FROM ACCOUNT
+GROUP BY branch_name;
