@@ -1,0 +1,212 @@
+db.employees.insertMany([
+    {
+        eid: "e1",
+        ename: "Rahul",
+        dept: "Development",
+        design: "Developer",
+        salary: 60000,
+        yoj: 2015,
+        address: {
+            dno: "101",
+            street: "MG Road",
+            locality: "Downtown",
+            city: "Mumbai"
+        }
+    },
+    {
+        eid: "e2",
+        ename: "Anjali",
+        dept: "Development",
+        design: "Developer",
+        salary: 75000,
+        yoj: 2018,
+        address: {
+            dno: "102",
+            street: "Baker Street",
+            locality: "West End",
+            city: "London"
+        }
+    },
+    {
+        eid: "e3",
+        ename: "Vikas",
+        dept: "Marketing",
+        design: "Manager",
+        salary: 72000,
+        yoj: 2016,
+        address: {
+            dno: "202",
+            street: "Highway 66",
+            locality: "Suburbs",
+            city: "Chicago"
+        }
+    },
+    {
+        eid: "e4",
+        ename: "Priya",
+        dept: "Sales",
+        design: "Executive",
+        salary: 50000,
+        yoj: 2017,
+        address: {
+            dno: "203",
+            street: "Oak Lane",
+            locality: "Green Valley",
+            city: "Delhi"
+        }
+    },
+    {
+        eid: "e5",
+        ename: "Kiran",
+        dept: "Development",
+        design: "Developer",
+        salary: 60000,
+        yoj: 2019,
+        address: {
+            dno: "204",
+            street: "Main Street",
+            locality: "City Center",
+            city: "Bangalore"
+        }
+    },
+    {
+        eid: "e6",
+        ename: "Sanya",
+        dept: "HR",
+        design: "HR Executive",
+        salary: 55000,
+        yoj: 2014,
+        address: {
+            dno: "205",
+            street: "Seaview Road",
+            locality: "Beach Town",
+            city: "Goa"
+        }
+    },
+    {
+        eid: "e7",
+        ename: "Manoj",
+        dept: "Finance",
+        design: "Analyst",
+        salary: 65000,
+        yoj: 2018,
+        address: {
+            dno: "206",
+            street: "Kingfisher Ave",
+            locality: "Downtown",
+            city: "Chennai"
+        }
+    },
+    {
+        eid: "e8",
+        ename: "Nisha",
+        dept: "Sales",
+        design: "Executive",
+        salary: 52000,
+        yoj: 2020,
+        address: {
+            dno: "207",
+            street: "Lakeside Street",
+            locality: "North End",
+            city: "Pune"
+        }
+    },
+    {
+        eid: "e9",
+        ename: "Rajesh",
+        dept: "Marketing",
+        design: "Manager",
+        salary: 70000,
+        yoj: 2016,
+        address: {
+            dno: "208",
+            street: "Sunset Boulevard",
+            locality: "Downtown",
+            city: "Hyderabad"
+        }
+    },
+    {
+        eid: "e10",
+        ename: "Suresh",
+        dept: "Development",
+        design: "Developer",
+        salary: 75000,
+        yoj: 2017,
+        address: {
+            dno: "209",
+            street: "Park Lane",
+            locality: "City Square",
+            city: "Kolkata"
+        }
+    }
+]);
+
+
+
+
+
+-------------------------------------------------------------------------
+
+QUERIES :
+
+1.	Display all the employees with salary in range (50000, 75000)
+
+db.employees.find({ salary: { $gt: 50000, $lt: 75000 } });
+
+2.	Display all the employees with design developer
+
+db.employees.find({ design: "Developer" });
+
+3.	Add field age to employee “Rahul”
+
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { $set: { age: 30 } }
+);
+
+4.	Remove YOJ from “Rahul”
+
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { $unset: { yoj: "" } }
+);
+
+
+
+5.	Remove p3 from “Rahul”
+
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { $unset: { address: "" } }
+);
+
+6. Add a new embedded object “contacts” with “email” and “phone” as
+array objects to “Rahul
+
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { 
+        $set: { 
+            contacts: {
+                email: ["rahul@example.com"],
+                phone: ["1234567890"]
+            }
+        }
+   }
+);
+
+
+
+
+
+
+
+7. Add two phone numbers to “Rahul”
+db.employees.updateOne(
+    { ename: "Rahul" },
+    { 
+        $push: { 
+            "contacts.phone": { $each: ["9876543210", "1122334455"] }
+        }
+    }
+);
