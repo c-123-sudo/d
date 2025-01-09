@@ -1,3 +1,10 @@
+Car Ownership database:
+PERSON (driver – id #, name, address)
+CAR (Regno, model, year)
+OWNS (driver-id #, Regno)
+I. Display the number of cars owned by each driver.
+--------------------------------------------------------------------------
+
 CREATE DATABASE CarOwnership;
 USE CarOwnership;
 
