@@ -1,3 +1,12 @@
+Movie database
+MOVIES(Title, YoP, Length).
+STARS(Name, ID,)
+ACT (MovieTitle, StarName)
+I. Print all movies released in chronological order.
+C
+II. Print all movies acted by 'KISHORE'
+
+--------------------------------------------------------------
 DROP DATABASE IF EXISTS MovieDB;
 CREATE DATABASE MovieDB;
 USE MovieDB;
