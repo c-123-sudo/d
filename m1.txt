@@ -1,3 +1,17 @@
+Consider the following restaurant database with the following attributes 
+Create an employee database with the fields: {eid, ename, dept, design,
+salary, yoj, address{dno,street, locality, city}}
+Create 10 documents with data relevant to the following questions.
+1. Display all the employees with salary in range (50000, 75000)
+2. Display all the employees with design developer
+3. Add field age to employee “Rahul”
+4. Remove YOJ from “Rahul”
+5. Remove p3 from “Rahul”
+6. Add a new embedded object “contacts” with “email” and “phone” as
+array objects to “Rahul
+7. Add two phone numbers to “Rahul”
+
+--------------------------------------------------------------------------------------
 db.employees.insertMany([
     {
         eid: "e1",
