@@ -1,0 +1,163 @@
+//A. Consider the following schema for a Library Database:
+BOOK (Book_id, Title, Publisher_Name, Pub_Year) BOOK_AUTHORS (Book_id, Author_Name) PUBLISHER (Name, Address, Phone)
+BOOK_COPIES (Book_id, Branch_id, No-of_Copies) BOOK_LENDING (Book_id, Branch id, Card No, Date Out, Due_Date)
+LIBRARY_BRANCH (Branch_id, Branch_Name, Address)
+Write SQL queries to
+1.
+Retrieve details of all books in the library id, title, name of publisher, authors, number of copies in each branch, etc
+2.
+Get the particulars of borrowers who have borrowed more than 3 books, but from Jan 2017 to Jun 2017
+3.
+Delete a book in the BOOK table. Update the contents of other tables to reflect this data manipulation operation.
+4.
+Partition the BOOK table based on year of publication. Demonstrate its working with a simple query.
+5.
+Create a view of all books and its number of copies that are currently available in the Library.
+------------------------------------------------------------------------
+
+CREATE DATABASE LibraryDB;
+USE LibraryDB;
+
+CREATE TABLE BOOK (
+    Book_id INT PRIMARY KEY, 
+    Title VARCHAR(100), 
+    Publisher_Name VARCHAR(100), 
+    Pub_Year INT
+);
+
+INSERT INTO BOOK (Book_id, Title, Publisher_Name, Pub_Year) VALUES 
+(1, 'To Kill a Mockingbird', 'HarperCollins', 1960), 
+(2, '1984', 'Secker & Warburg', 1949), 
+(3, 'Pride and Prejudice', 'T. Egerton', 1813), 
+(4, 'The Great Gatsby', 'Charles Scribner''s Sons', 1925), 
+(5, 'Moby Dick', 'Harper & Brothers', 1851), 
+(6, 'The Catcher in the Rye', 'Little, Brown and Company', 1951);
+
+CREATE TABLE BOOK_AUTHORS (
+    Book_id INT, 
+    Author_Name VARCHAR(100), 
+    FOREIGN KEY (Book_id) REFERENCES BOOK(Book_id)
+);
+
+INSERT INTO BOOK_AUTHORS (Book_id, Author_Name) VALUES 
+(1, 'Harper Lee'), 
+(2, 'George Orwell'), 
+(3, 'Jane Austen'), 
+(4, 'F. Scott Fitzgerald'), 
+(5, 'Herman Melville'), 
+(6, 'J.D. Salinger');
+
+CREATE TABLE PUBLISHER (
+    Name VARCHAR(100) PRIMARY KEY, 
+    Address VARCHAR(100), 
+    Phone VARCHAR(15)
+);
+
+INSERT INTO PUBLISHER (Name, Address, Phone) VALUES 
+('HarperCollins', '195 Broadway, New York', '212-207-7000'), 
+('Secker & Warburg', '20 Vauxhall Bridge Road, London', '020-7762-2300'), 
+('T. Egerton', 'Whitcomb Street, London', '020-7872-8500'), 
+('Charles Scribner''s Sons', '597 Fifth Avenue, New York', '212-555-2100'), 
+('Harper & Brothers', '195 Broadway, New York', '212-207-7700'), 
+('Little, Brown and Company', 'Harvard Street, Boston', '617-536-4427');
+
+CREATE TABLE BOOK_COPIES (
+    Book_id INT, 
+    Branch_id INT, 
+    No_of_Copies INT, 
+    FOREIGN KEY (Book_id) REFERENCES BOOK(Book_id)
+);
+
+INSERT INTO BOOK_COPIES (Book_id, Branch_id, No_of_Copies) VALUES 
+(1, 1, 5), (1, 2, 3), (1, 3, 4), 
+(2, 1, 6), (2, 2, 2), (2, 3, 1), 
+(3, 1, 7), (3, 2, 8), (3, 3, 5), 
+(4, 1, 4), (4, 2, 5), (4, 3, 6), 
+(5, 1, 10), (5, 2, 2), (5, 3, 7), 
+(6, 1, 3), (6, 2, 5), (6, 3, 2);
+
+CREATE TABLE LIBRARY_BRANCH (
+    Branch_id INT PRIMARY KEY, 
+    Branch_Name VARCHAR(100), 
+    Address VARCHAR(100)
+);
+
+INSERT INTO LIBRARY_BRANCH (Branch_id, Branch_Name, Address) VALUES 
+(1, 'Central Library', 'Main Street, New York'), 
+(2, 'East Side Branch', 'East Avenue, New York'), 
+(3, 'West Side Branch', 'West Avenue, New York');
+
+CREATE TABLE BOOK_LENDING (
+    Book_id INT, 
+    Branch_id INT, 
+    Card_No INT, 
+    Date_Out DATE, 
+    Due_Date DATE, 
+    FOREIGN KEY (Book_id) REFERENCES BOOK(Book_id), 
+    FOREIGN KEY (Branch_id) REFERENCES LIBRARY_BRANCH(Branch_id)
+);
+
+INSERT INTO BOOK_LENDING (Book_id, Branch_id, Card_No, Date_Out, Due_Date) VALUES 
+(1, 1, 101, '2017-01-10', '2017-01-24'), 
+(2, 2, 101, '2017-02-01', '2017-02-15'), 
+(3, 1, 101, '2017-03-05', '2017-03-19'), 
+(4, 3, 101, '2017-05-10', '2017-05-24'), 
+(5, 2, 102, '2017-01-15', '2017-01-29'), 
+(6, 1, 102, '2017-02-10', '2017-02-24'), 
+(1, 2, 102, '2017-03-01', '2017-03-15'), 
+(3, 3, 102, '2017-04-10', '2017-04-24'), 
+(2, 1, 102, '2017-06-01', '2017-06-15'), 
+(4, 1, 103, '2017-01-20', '2017-02-03'), 
+(5, 2, 103, '2017-03-01', '2017-03-15');
+
+---------------------------------------------------------------------------------
+SELECT 
+    b.Book_id, 
+    b.Title, 
+    b.Publisher_Name, 
+    b.Pub_Year, 
+    a.Author_Name, 
+    bc.Branch_id, 
+    bc.No_of_Copies
+FROM 
+    BOOK b
+JOIN 
+    BOOK_AUTHORS a ON b.Book_id = a.Book_id
+JOIN 
+    BOOK_COPIES bc ON b.Book_id = bc.Book_id;
+
+
+
+SELECT 
+    bl.Card_No, 
+    COUNT(*) AS Books_Borrowed
+FROM 
+    BOOK_LENDING bl
+WHERE 
+    bl.Date_Out BETWEEN '2017-01-01' AND '2017-06-30'
+GROUP BY 
+    bl.Card_No
+HAVING 
+    COUNT(*) > 3;
+
+
+
+DELETE FROM BOOK_AUTHORS WHERE Book_id = 3;
+DELETE FROM BOOK_COPIES WHERE Book_id = 3;
+DELETE FROM BOOK_LENDING WHERE Book_id = 3;
+DELETE FROM BOOK WHERE Book_id = 3;
+
+
+
+CREATE VIEW Available_Books AS 
+SELECT 
+    b.Book_id, 
+    b.Title, 
+    SUM(bc.No_of_Copies) AS Total_Available_Copies
+FROM 
+    BOOK b
+JOIN 
+    BOOK_COPIES bc ON b.Book_id = bc.Book_id
+GROUP BY 
+    b.Book_id, b.Title;
+
