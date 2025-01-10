@@ -1,0 +1,346 @@
+Write a Java Program that does the following
+a. Create a super class called Car. The Car class has the following fields and
+ methods. int speed; double regularPrice; String color; double getSalePrice();
+b. Create a sub class of Car class and name it as Truck. The Truck class has the 
+ following fields and methods. int weight; double getSalePrice(); /If 
+ weight>2000,10% discount. Otherwise,20%discount.
+c. Create a subclass of Car class and name it as Ford. The Ford class has the following 
+ fields and methods int year; int manufacturerDiscount; double getSalePrice();
+ //From the sale price computed from Carclass, subtract the manufacturer
+ Discount.
+d. Create a subclass of Car class and name it as Sedan. The Sedan
+ class has the following fields and methods. int length; double getSalePrice(); //If 
+ length>20 feet, 5% discount, Otherwise, 10% discount.
+e. Create MyOwnAutoShop class which contains the main() method. Perform the 
+ following within the main() method.
+f. Create an instance of Sedan class and initialize all the fields with appropriate 
+ values.
+g. Use super(...) method in the constructor for initializing the fields of the 
+ superclass.
+h. Create an instance of the Ford class and initialize all the fields with appropriate
+ values.
+i. Use super(...) method in the constructor for initializing the fields of the super 
+ Class.
+j. Create an instance of Car class and initialize all the fields with appropriate 
+ values. Display the sale prices of all instances.
+Program:
+class Car
+{
+ int speed;
+ double regularPrice;
+ String color;
+ Car(int s,double price,String c)
+ {
+ speed=s;
+ regularPrice=price;
+ color=c;
+ }
+ double getSalePrice()
+ {
+ return regularPrice;
+ }
+}
+class Truck extends Car{
+int weight;
+ Truck(int s,double price,String c,int w)
+ {
+ super(s,price,c);
+ weight=w;
+ }
+ double getSalePrice()
+ {
+ if(weight>2000)
+ { 
+ regularPrice=regularPrice*0.9;
+ return regularPrice;
+ }
+ else
+ {
+ regularPrice=regularPrice*0.8;
+ return regularPrice;
+ }
+ }
+}
+class Ford extends Car
+{ 
+ int manufacturerDiscount,year;
+ Ford(int s,double price,String c,int m)
+ {
+ super(s,price,c);
+ manufacturerDiscount=m;
+ }
+ double getSalePrice()
+ {
+ regularPrice-=manufacturerDiscount;
+ return regularPrice;
+ }
+}
+class Sedan extends Car
+{ 
+int length;
+Sedan(int s,double price,String c,int l)
+{
+ super(s,price,c);
+ length=l;
+}
+double getSalePrice()
+{
+ if(length>20)
+ { 
+ regularPrice=regularPrice*0.95;
+ return regularPrice;
+ }
+ else
+ { 
+ regularPrice=regularPrice*0.9;
+ return regularPrice;
+ }
+}
+}
+public class MyOwnAutoShop
+{
+ public static void main(String[] args) 
+ {
+ Truck t=new Truck(65,2500000,"Red",3000);
+ System.out.println("Price of truck is "+t.getSalePrice());
+ Car c = new Car(100,800000,"Black");
+ System.out.println("Price of Car is "+c.getSalePrice());Ford f=new Ford(120,2200000,"Yellow",1 20000);
+ System.out.println("Price of ford is "+f.getSalePrice());
+ Sedan s= new Sedan(100,3500000,"Blue",22);
+ System.out.println("Price of Sedan is "+s.getSalePrice());
+ }
+}
+Output:
+javac MyOwnAutoShop.java
+java MyOwnAutoShop
+Price of truck is 2250000.0
+Price of Car is 800000.0
+Price of ford is 2180000.0
+Price of Sedan is 3325000.0
+5 Write a Java Program that implements the following
+a. Define a class SavingsAccount with following characteristics.
+b. Use a static variable annualInterestRate to store the annual interest rate for all
+ account holders.
+c. Private data member savingsBalance indicating the amount the saver currently 
+ has on deposit.
+d. Method calculateMonthlyInterest to calculate the monthly interest as 
+ (savingsBalance * annualInterestRate / 12) . After calculation, the interest 
+ should be added to savingsBalance.
+e. Static method modifyInterestRate to set annualInterestRate.
+f. Parameterized constructor with savingsBalance as an argument to set the value 
+ of that instance.
+g. Test the class SavingsAccount to instantiate two savingsAccount objects, saver1 
+and saver2, with balances of Rs.2000.00 and Rs3000.00, respectively.Set 
+annualInterestRate to 4%, then calculate the monthly interest and print the 
+new balances for both savers. Then set the annualInterestRate to 5%, calculate 
+the next month’s interest and print the new balances forboth savers.
+Program:
+class SavingsAccount
+{
+ static int annualInterestRate;
+ private double savingsBalance;
+ SavingsAccount(double s)
+ {
+ savingsBalance=s;
+ }
+ static void modifyInterestRate(int x)
+ {
+ annualInterestRate=x;
+ }
+ void calculateMonthlyInterest()
+ {
+ double d=(savingsBalance*annualInterestRate)/12;
+ savingsBalance=savingsBalance+d;
+ }
+ void display()
+ {
+ System.out.println(savingsBalance);
+ }
+}
+public class SavingsAccountMain{
+ public static void main(String[] args) 
+ {
+SavingsAccount saver1=new SavingsAccount(2000);
+SavingsAccount saver2=new SavingsAccount(3000);
+SavingsAccount.modifyInterestRate(4);
+saver1.calculateMonthlyInterest();
+saver2.calculateMonthlyInterest();
+saver1.display();
+saver2.display();
+SavingsAccount.modifyInterestRate(5);
+saver1.calculateMonthlyInterest();
+saver2.calculateMonthlyInterest();
+saver1.display();
+saver2.display();
+ }
+}
+Output:
+javac SavingsAccountMain.java
+java SavingsAccountMain
+2666.6666666666665
+4000.0
+3777.7777777777774
+5666.666666666667
+6 Write a Java Program that does the following related to Inheritance:
+a. Create an abstract class called ‘Vehicle’ which contains the 'hashelmet',‘year of 
+manufacture’ and two abstract methods ‘getData()’ and ‘putData()’. Demonstrate 
+the error when attempt is made to create objects of ‘Vehicle’.
+b. Have two derived classes ‘TwoWheeler’ and ‘FourWheeler’, ‘FourWheeler’ is a final 
+ class. Demonstrate the error when attempt is made to inherit from ‘FourWheeler’.
+c. Your abstract class should have overloaded constructors that initializes hashelmet 
+ and year of manufacture for TwoWheeler and FourWheeler respectively.
+d. ‘TwoWheeler” has data elements ‘Brand’, ‘Cost’, ‘EngineType’ (possible values “2 
+stroke”, “4 stroke”), and ‘Color’. Demonstrate the various ways in which the two 
+abstract methods can be dealt ‘getData()’ and ‘putData()’ can be dealt with by the 
+derived classes, ‘TwoWheeler’ and ‘FourWheeler’.
+e. The sub-class of ‘TwoWheeler’ called ‘MyTwoWheeler’ has the element 
+‘OwnerName’.
+f. Use the super keyword to initialize an object of ‘MyTwoWheeler’ with all the values 
+of its parent class data elements.
+Program:
+import java.util.*;
+abstract class Vehicle
+{
+ boolean hashelmet;
+ int yom;
+ abstract void getData();
+ abstract void putData();
+ Vehicle(boolean h,int n)
+ {
+ hashelmet=h;
+ yom=n;
+ }
+}
+class TwoWheeler extends Vehicle
+{ 
+ private String Brand;
+ protected int Cost;
+ String EngineType;
+ public String Color;
+ TwoWheeler(int n)
+ 
+ {
+ super(true,n);
+ }
+ void getData()
+ { 
+ Scanner sc=new Scanner(System.in);
+ System.out.println("Enter Brand name,Cost,EngineType and Colour");
+ Brand=sc.next();
+ Cost=sc.nextInt();
+ EngineType=sc.next();
+ Color=sc.next();
+ }
+ void putData()
+ {
+ System.out.println("Brand:"+Brand+"\nCost:"+Cost+"\n EngineType:"
+ +EngineType+"\nColor:"+Color+" \nYear of 
+ Manufacture:"+yom+"\nHas helmet:"+hashelmet);
+ }
+}
+final class FourWheeler extends Vehicle
+{
+ FourWheeler(int n)
+ {
+ super(false,n);
+ }
+ void getData()
+ {
+ }
+ void putData()
+ {
+ System.out.println("Year of Manufacture:"+yom+"\nHas 
+ helmet:"+hashelmet);
+ }
+}
+class MyTwoWheeler extends TwoWheeler
+{
+ String name;
+ MyTwoWheeler(String name,int n)
+ {
+ super(n);
+ this.name=name;
+ }
+ void display()
+ { 
+ super.getData();
+ putData();
+ System.out.println("Name:"+name);
+ }
+}
+/* class A extends FourWheeler
+ {
+ A()
+ {
+ super(5);
+ }
+ }
+*/
+public class VehicleMain 
+{
+ public static void main(String[] args)
+ {
+ /*Vehicle v=new Vehicle();
+ Cannot Create instance of an abstract class*/
+ TwoWheeler t1=new TwoWheeler(1995);
+ FourWheeler f1=new FourWheeler(2006);
+ t1.getData();
+ t1.putData();
+ f1.putData();
+ }
+}
+Output:
+javac VehicleMain.java
+java VehicleMain
+Enter Brand name,Cost,EngineType and Colour
+Mercedes
+120000
+Electric
+Red 
+Brand:Mercedes
+Cost:120000
+EngineType:Electric
+Color:Red 
+Year of Manufacture:1995
+Has helmet:true
+Year of Manufacture:2006
+Has helmet:false
+11 Write java program to create a package called AdvMath, which has two classes. In
+main class use this package to display the result as requested by the user.
+i. To calculate y = sin(x) + cos(x) + tan(x)
+Program:
+package AdvMath;
+import java.util.*;
+public class MathsEquation
+{
+double x;
+int n;
+public MathsEquation(double x)
+{
+this.x=x;
+}
+public MathsEquation(int n)
+{
+this.n=n;
+}
+public void Trigo()
+{
+System.out.println("Y="+(Math.sin(x)+Math.cos(x)+Math.tan(x)));
+}
+}
+import AdvMath.MathsEquation;
+public class MathsMain
+{
+public static void main(String args[])
+{
+MathsEquation me = new MathsEquation(15.23);
+MathsEquation meq = new MathsEquation(16);
+ me.Trigo();
+}
+}
+ 
+Output:
+javac -d . MathsEquation.java
+javac MathsMain.java
+java MathsMain
+Y=-0.9459867784582877
