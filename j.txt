@@ -1,0 +1,234 @@
+[1/10, 11:12] Preetham Ss: import java.util.Scanner;
+class Employee
+{
+int id;
+String name;
+int age;
+double salary;
+Employee(int id, String name, int age, double salary)
+this.id = id;
+this.name = name;
+this.age = age;
+this.salary = salary;
+{
+}
+}
+public class Employee_Details
+{
+public static void main(String[] args)
+{
+Scanner sc = new Scanner(System.in);
+Employee[] e = new Employee[3];
+for (int i = 0; i < 3; i++)
+{
+System.out.print("Enter employee ID: ");
+int id = sc.nextInt();
+sc.nextLine();
+System.out.print("Enter employee name: ");
+String name = sc.nextLine();
+System.out.print("Enter employee age: ");
+int age = sc.nextInt();
+System.out.print("Enter employee salary: ");
+double salary = sc.nextDouble();
+e[i] = new Employee(id, name, age, salary);
+}
+for (int i = 0; i < 3; i++)
+{
+for (int j = i + 1; j < 3; j++)
+{
+if (e[i].age > e[j].age)
+{
+Employee temp = e[i];
+e[i] = e[j];
+e[j] = temp;
+}
+}
+}
+// Display employee details in order of age
+System.out.println("Employee details in order of age:");
+for (int i = 0; i < 3; i++)
+6
+{
+System.out.println("ID: " + e[i].id + ", Name: " + e[i].name
++ ", Age: " + e[i].age + ",
+Salary: " + e[i].salary);
+}
+}
+}
+[1/10, 11:12] Preetham Ss: import java.util.*;
+interface area
+{
+double pi = 3.14;
+double calc(double x,double y);
+}
+class rect implements area
+{
+public double calc(double x,double y)
+{
+return(x*y);
+}
+}
+{
+class cir implements area
+public double calc(double x,double y)
+{
+return(pi*x*x);
+}
+}
+class Test7
+{
+public static void main(String args[])
+{
+rect r = new rect();
+cir c = new cir();
+area a;
+a = r;
+System.out.println("\nArea of Rectangle is
+:"+a.calc(10,20));
+a = c;
+System.out.println("\nArea of Circle is
+:"+a.calc(15,15));
+}
+}
+[1/10, 11:13] Preetham Ss: class Stack
+{
+int stck[] = new int[10];
+int tos;
+Stack()
+{
+tos = -1;
+}
+void push(int item)
+{
+if(tos == 9)
+System.out.println("Stack is full.");
+else
+stck[++ tos] = item;
+}
+int pop()
+{
+if(tos < 0)
+{
+System.out.println("Stack underflow.");
+18
+return 0;
+}
+else
+{
+}
+return stck[tos --];
+}
+class TestStack
+}
+{
+public static void main(String args[])
+{
+Stack obj1 = new Stack();
+Stack obj2 = new Stack();
+for(int i=0 ; i<10; i++)
+obj1.push(i);
+for(int i=0 ; i<10; i++)
+obj2.push(i);
+System.out.println("\nFirst Stack: \n");
+for(int i=0 ; i<10; i++)
+System.out.println(obj1.pop() + "\t");
+System.out.println("\nSecond Stack: \n");
+for(int i=0 ; i<10; i++)
+System.out.println(obj2.pop() + "\t");
+}
+}
+..................
+// Class to represent a Matrix
+class Matrix {
+    int rows;
+    int cols;
+    int[][] data;
+
+    // Constructor to initialize the matrix
+    public Matrix(int rows, int cols) {
+        this.rows = rows;
+        this.cols = cols;
+        this.data = new int[rows][cols];
+    }
+
+    // Method to set values in the matrix
+    public void setValues(int[][] values) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                this.data[i][j] = values[i][j];
+            }
+        }
+    }
+
+    // Method to display the matrix
+    public void display() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                System.out.print(data[i][j] + " ");
+            }
+            System.out.println();
+        }
+    }
+}
+
+public class MatrixMultiplication {
+    public static void main(String[] args) {
+        // Define dimensions for the matrices
+        int rows1 = 2, cols1 = 3;
+        int rows2 = 3, cols2 = 2;
+
+        // Create an array of Matrix objects
+        Matrix[] matrices = new Matrix[2];
+        matrices[0] = new Matrix(rows1, cols1);
+        matrices[1] = new Matrix(rows2, cols2);
+
+        // Set values for the first matrix
+        int[][] values1 = {
+            {1, 2, 3},
+            {4, 5, 6}
+        };
+        matrices[0].setValues(values1);
+
+        // Set values for the second matrix
+        int[][] values2 = {
+            {7, 8},
+            {9, 10},
+            {11, 12}
+        };
+        matrices[1].setValues(values2);
+
+        // Display the input matrices
+        System.out.println("Matrix 1:");
+        matrices[0].display();
+
+        System.out.println("Matrix 2:");
+        matrices[1].display();
+
+        // Perform matrix multiplication
+        Matrix result = multiplyMatrices(matrices[0], matrices[1]);
+
+        // Display the result
+        System.out.println("Resultant Matrix:");
+        result.display();
+    }
+
+    // Method to multiply two matrices
+    public static Matrix multiplyMatrices(Matrix m1, Matrix m2) {
+        if (m1.cols != m2.rows) {
+            throw new IllegalArgumentException("Matrix multiplication is not possible. Number of columns in Matrix 1 must equal the number of rows in Matrix 2.");
+        }
+
+        Matrix result = new Matrix(m1.rows, m2.cols);
+
+        for (int i = 0; i < m1.rows; i++) {
+            for (int j = 0; j < m2.cols; j++) {
+                result.data[i][j] = 0;
+                for (int k = 0; k < m1.cols; k++) {
+                    result.data[i][j] += m1.data[i][k] * m2.data[k][j];
+                }
+            }
+        }
+
+        return result;
+    }
+}
